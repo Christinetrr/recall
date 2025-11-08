@@ -126,7 +126,12 @@ def record_frame(frame):
 
 
 def main():
-    webcam_processing()
+    for i in range(10):
+        cap = cv2.VideoCapture(i)
+        if cap.isOpened():
+            print(f"Camera found at index {i}")
+            cap.release()
+    #webcam_processing()
 
 if __name__ == "__main__":
     main()

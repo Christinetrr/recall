@@ -27,9 +27,13 @@ from typing import Optional
 
 import cv2
 import numpy as np
-from deepface import DeepFace
 
 from .api import summarize_frames
+
+#initialize face cascade
+FACE_CASCADE = cv2.CascadeClassifier(
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+)
 
 def preprocess_frame(frame):
     """preprocess video frame to reduce noise and normalize to grayscale"""
@@ -108,7 +112,7 @@ def webcam_processing(camera_source=0, display_window: bool = False):
         if not ok:
             break
         # preprocess live video feed
-        frame, gray = preprocess_frame(frame)
+        frame, gray_scaled_frame = preprocess_frame(frame)
 
         #print("preprocessed frame", frame)
         if display_window:
@@ -121,7 +125,7 @@ def webcam_processing(camera_source=0, display_window: bool = False):
                 display_window = False
 
         # only record frames when significant scene change is detected
-        if scene_detector.detect(frame, gray):
+        if scene_detector.detect(frame, gray_scaled_frame):
             print("detected scene change", frame)
             frames_buffer.append(frame.copy())
 
@@ -130,8 +134,9 @@ def webcam_processing(camera_source=0, display_window: bool = False):
             frames_buffer.clear()
             period_start = time.time()
 
-        # if familiar face detected, run the facial recognition process and record conversation
-        if face_detected(frame):
+        # if familiar face detected and they are speaking
+        # run the facial recognition process and record conversation
+        if face_detected(gray_scaled_frame) && audio_detected():
             process_face(frame)
         else:
             continue
@@ -209,26 +214,28 @@ def record_frames(frames, summary):
     pass
 
 #facial similarity check
-def face_detected(frame):
-    #detect face in frame using deepface library
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    try:
-        detections = DeepFace.extract_faces(
-            img_path=rgb_frame,
-            detector_backend="retinaface",
-            enforce_detection=False,
-        )
-    except Exception as exc:
-        print(f"DeepFace detection error: {exc}")
+def face_detected(gray_frame):
+    if FACE_CASCADE.empty():
+        logging.warning("OpenCV Haar cascade failed to load; skipping face detection.")
         return False
 
-    has_face = bool(detections)
+    detections = FACE_CASCADE.detectMultiScale(
+        gray_frame,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(30, 30),
+        flags=cv2.CASCADE_SCALE_IMAGE,
+    )
+
+    has_face = len(detections) > 0
     if has_face:
-        print(True)
+        logging.debug("Detected %d face(s) in current frame.", len(detections))
     return has_face
 
     #compare with similarity from database recorded facial profiles
 
+def audio_detected():
+    
 #run live audio processing, send to LLM for summarization, process text, store
 def process_face(frame):
     #process face in frame

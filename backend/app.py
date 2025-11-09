@@ -20,7 +20,7 @@ from memory_schema import MemoryDatabase
 
 # IMPORTANT: This uses OpenCV as a placeholder for face detection
 # 
-# TODO FOR COLLEAGUE: Replace extract_face_embedding() function below with:
+# TODO: Replace extract_face_embedding() function below with:
 # - face_recognition library (if you can install it)
 # - OR send embeddings directly from Raspberry Pi to /api/profiles/recognize
 # - The embedding MUST be 128-dimensional to match the database schema
@@ -122,7 +122,7 @@ def setup_facial_profile():
     Expected form data:
     - photo: image file
     - name: person's name
-    - relation: relationship (Colleague, Friend, Family, etc.)
+    - relation: relationship (Friend, Family, etc.)
     - metadata: optional JSON string with additional info
     
     Returns:
@@ -218,7 +218,7 @@ def recognize_face():
     {
       "recognized": true,
       "name": "Alex Smith",
-      "relation": "Colleague",
+      "relation": "Friend",
       "similarity": 0.89,
       "metadata": {...}
     }

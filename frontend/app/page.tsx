@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MeshGradient } from "@paper-design/shaders-react";
 
 import { fetchTimeline, groupTimelineByDay } from "../lib/timeline";
+import AddProfileButton from "../components/AddProfileButton";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   dateStyle: "medium",
@@ -48,52 +49,55 @@ export default async function Home({ searchParams }: PageProps) {
         />
       </div>
       <main className="relative mx-auto flex w-full max-w-2xl flex-col gap-12 px-6">
-        <header className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {currentDay ? currentDay.label : "Timeline"}
-          </h1>
-          <p className="text-md text-zinc-500 mt-2 mb-8">
-            Here is what you did today.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <header className="flex-1 space-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight">
+              {currentDay ? currentDay.label : "Timeline"}
+            </h1>
+            <p className="text-md text-zinc-500 mt-2 mb-8">
+              Here is what you did today.
+            </p>
 
-          {timelineByDay.length > 1 ? (
-            <nav className="flex items-center justify-between text-xs uppercase tracking-wide text-zinc-400">
-              <span className="flex items-center gap-2">
-                <span aria-hidden="true">←</span>
-                {previousDay ? (
-                  <Link
-                    href={`?day=${previousDay.key}`}
-                    className="hover:text-zinc-700"
-                  >
-                    {previousDay.label}
-                  </Link>
-                ) : (
-                  <span className="opacity-50" aria-disabled="true">
-                    No earlier entries
-                  </span>
-                )}
-              </span>
-              <span>
-                Day {dayIndex + 1} of {timelineByDay.length}
-              </span>
-              <span className="flex items-center gap-2">
-                {nextDay ? (
-                  <Link
-                    href={`?day=${nextDay.key}`}
-                    className="hover:text-zinc-700"
-                  >
-                    {nextDay.label}
-                  </Link>
-                ) : (
-                  <span className="opacity-50" aria-disabled="true">
-                    No later entries
-                  </span>
-                )}
-                <span aria-hidden="true">→</span>
-              </span>
-            </nav>
-          ) : null}
-        </header>
+            {timelineByDay.length > 1 ? (
+              <nav className="flex items-center justify-between text-xs uppercase tracking-wide text-zinc-400">
+                <span className="flex items-center gap-2">
+                  <span aria-hidden="true">←</span>
+                  {previousDay ? (
+                    <Link
+                      href={`?day=${previousDay.key}`}
+                      className="hover:text-zinc-700"
+                    >
+                      {previousDay.label}
+                    </Link>
+                  ) : (
+                    <span className="opacity-50" aria-disabled="true">
+                      No earlier entries
+                    </span>
+                  )}
+                </span>
+                <span>
+                  Day {dayIndex + 1} of {timelineByDay.length}
+                </span>
+                <span className="flex items-center gap-2">
+                  {nextDay ? (
+                    <Link
+                      href={`?day=${nextDay.key}`}
+                      className="hover:text-zinc-700"
+                    >
+                      {nextDay.label}
+                    </Link>
+                  ) : (
+                    <span className="opacity-50" aria-disabled="true">
+                      No later entries
+                    </span>
+                  )}
+                  <span aria-hidden="true">→</span>
+                </span>
+              </nav>
+            ) : null}
+          </header>
+          <AddProfileButton />
+        </div>
 
         <section className="relative border-l border-zinc-200 pl-6">
           {!currentDay || currentDay.items.length === 0 ? (

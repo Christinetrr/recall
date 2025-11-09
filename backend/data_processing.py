@@ -110,8 +110,6 @@ def webcam_processing(camera_source=0, display_window: bool = False):
             break
         # preprocess live video feed
         frame, gray_scaled_frame = preprocess_frame(frame)
-
-        #print("preprocessed frame", frame)
         if display_window:
             try:
                 cv2.imshow("BRIO feed", frame)
@@ -132,19 +130,30 @@ def webcam_processing(camera_source=0, display_window: bool = False):
             period_start = time.time()
 
          """
-         if familiar face detected and audio is detected
+         (1)if familiar face detected and they are speaking 
          run the facial recognition process and record live conversation
-         audio detectio might need to be refined later for accuracy and precision
+         **audio detection might need to be refined later for accuracy and precision**
+
+         (2) once audio stops processing, send the aggregated audio to 
+         whisper for transcription
          
          """
-
-
+        audio = None
         while face_detected(gray_scaled_frame) and audio_detected():
             print("SOMEONE IS SPEAKING: familiar face and audio detected")
-            detection_flag = true
-            recording_audio()
-        if detection_flag == true:
-            recording_audio(frame)
+            detection_flag = True
+            #record live conversation audio
+            audio = recording_audio(frame)
+
+        #finished current conversation recording
+        if detection_flag == True :
+            #error handling for no audio recorded but false detection
+            if audio is None: 
+                print("NO AUDIO RECORDED: no audio detected")
+                detection_flag = False
+                continue
+            process_audio(audio)
+            detection_flag = False
         else:
             continue
 
@@ -346,11 +355,14 @@ def audio_detected() -> bool:
         _speech_detector = _VadSpeechDetector()
     return _speech_detector.is_speaking()
 
-#run live audio processing and transcription appending to current conversation
+#run live audio processing 
 def recording_audio(frame):
-    #process face in frame
     pass
 
+#send aggregated audio to whisper for transcription, grok for summarization, 
+#store returned results to db associated with the profile
+def process_audio(audio):
+    pass
 #send to LLM for summarization, process text, store
 def process_text(text):
     pass

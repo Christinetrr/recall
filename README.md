@@ -1,4 +1,4 @@
-# TBD - Assistive Memory System
+# Recall - Assistive Memory System
 
 An intelligent assistive memory system that combines facial recognition, audio/video analysis, and AI-powered summarization to help users remember and track their daily interactions.
 
